@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brightrose Tech</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+    <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
     <style>
         :root {
             --primary: #6C63FF;
@@ -14,6 +19,7 @@
             --light: #F7F9FC;
             --gray: #8C8EA4;
             --success: #4CAF50;
+            --warning: #FF9800;
             --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             --transition: all 0.3s ease;
         }
@@ -176,6 +182,7 @@
             margin-bottom: 15px;
             transition: var(--transition);
             animation: fadeIn 0.5s ease;
+            cursor: pointer;
         }
 
         .course-card:hover {
@@ -345,7 +352,7 @@
         }
 
         /* Courses Page */
-        .courses-page, .community-page, .profile-page {
+        .courses-page, .community-page, .profile-page, .terms-page {
             display: none;
         }
 
@@ -361,6 +368,7 @@
             padding: 20px;
             box-shadow: var(--card-shadow);
             transition: var(--transition);
+            cursor: pointer;
         }
 
         .course-item:hover {
@@ -425,6 +433,443 @@
 
         .btn-learn:hover {
             background: var(--primary-dark);
+        }
+
+        /* Terms & Conditions Page */
+        .terms-page {
+            padding: 20px;
+            background: white;
+        }
+
+        .terms-container {
+            background: var(--light);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .terms-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        .terms-subtitle {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 15px 0 10px 0;
+            color: var(--dark);
+        }
+
+        .terms-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--gray);
+        }
+
+        .terms-content p {
+            margin-bottom: 10px;
+        }
+
+        .terms-content ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .terms-content li {
+            margin-bottom: 8px;
+        }
+
+        .terms-checkbox {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .terms-checkbox input {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .terms-checkbox label {
+            font-size: 0.9rem;
+            color: var(--dark);
+        }
+
+        .terms-checkbox a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .terms-checkbox a:hover {
+            text-decoration: underline;
+        }
+
+        .terms-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-decline {
+            background: var(--light);
+            color: var(--dark);
+            flex: 1;
+        }
+
+        .btn-accept {
+            background: var(--primary);
+            color: white;
+            flex: 1;
+        }
+
+        /* Course Details Page */
+        .course-details-page {
+            display: none;
+        }
+
+        .course-hero {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-hero h1 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .course-hero p {
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .course-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .meta-item i {
+            margin-right: 5px;
+        }
+
+        .progress-container {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            height: 8px;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: white;
+            border-radius: 10px;
+            width: 0%;
+            transition: width 1s ease;
+        }
+
+        .course-tabs {
+            display: flex;
+            background: var(--light);
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 20px;
+        }
+
+        .course-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .course-tab.active {
+            background: white;
+            box-shadow: var(--card-shadow);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .module-list {
+            margin-bottom: 20px;
+        }
+
+        .module-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .module-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .module-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--primary);
+        }
+
+        .module-info {
+            flex: 1;
+        }
+
+        .module-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .module-desc {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .module-status {
+            color: var(--success);
+            font-size: 0.9rem;
+        }
+
+        /* Exam Page */
+        .exam-page {
+            display: none;
+        }
+
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .exam-timer {
+            background: var(--primary);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .question-container {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-item {
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .option-item:hover {
+            border-color: var(--primary);
+        }
+
+        .option-item.selected {
+            border-color: var(--primary);
+            background: rgba(108, 99, 255, 0.05);
+        }
+
+        .exam-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--light);
+            color: var(--dark);
+        }
+
+        .question-progress {
+            margin-top: 20px;
+        }
+
+        /* Results Page */
+        .results-page {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .results-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--success);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+        }
+
+        .results-score {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .results-message {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .btn-certificate {
+            background: var(--secondary);
+            color: white;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        /* Certificate Page */
+        .certificate-page {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .certificate-container {
+            background: white;
+            border: 20px solid #f5f5f5;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+        }
+
+        .certificate-header {
+            margin-bottom: 20px;
+        }
+
+        .certificate-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .certificate-subtitle {
+            font-size: 1.2rem;
+            color: var(--gray);
+            margin-bottom: 30px;
+        }
+
+        .certificate-body {
+            margin-bottom: 30px;
+        }
+
+        .certificate-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .certificate-course {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .certificate-date {
+            font-size: 1rem;
+            color: var(--gray);
+            margin-bottom: 30px;
+        }
+
+        .certificate-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+
+        .signature {
+            text-align: center;
+        }
+
+        .signature-line {
+            width: 200px;
+            height: 1px;
+            background: var(--dark);
+            margin: 0 auto 10px;
+        }
+
+        .btn-download {
+            background: var(--primary);
+            color: white;
+            width: 100%;
         }
 
         /* Community Page */
@@ -533,6 +978,22 @@
             width: 100%;
             border-radius: 10px;
             margin-bottom: 10px;
+            max-height: 300px;
+            object-fit: cover;
+        }
+
+        .post-file {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: var(--light);
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .post-file i {
+            margin-right: 10px;
+            color: var(--primary);
         }
 
         .post-engagement {
@@ -674,10 +1135,10 @@
         <div class="header">
             <h1>Brightrose Tech</h1>
             <div class="profile-card">
-                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80" alt="Profile" class="profile-img">
+                <img id="header-profile-img" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80" alt="Profile" class="profile-img">
                 <div class="profile-info">
-                    <h2>Nmegwa Denis Bright</h2>
-                    <p>Founder and Tutor</p>
+                    <h2 id="header-user-name">Loading...</h2>
+                    <p id="header-user-role">Student</p>
                 </div>
             </div>
         </div>
@@ -690,7 +1151,7 @@
                 <div class="hot-courses">
                     <h2 class="section-title">Hot Courses <span>View All</span></h2>
                     
-                    <div class="course-card">
+                    <div class="course-card" data-course="digital-sales">
                         <div class="course-header">
                             <div class="course-title">Digital Sales</div>
                             <div class="course-badge">HOT</div>
@@ -698,13 +1159,13 @@
                         <div class="course-content">
                             <p>Master the art of digital sales with our comprehensive course designed for modern professionals.</p>
                             <div class="course-actions">
-                                <button class="btn btn-enroll">Enroll Now</button>
+                                <button class="btn btn-enroll" onclick="navigateToCourse('digital_sales')">Enroll Now</button>
                                 <button class="btn btn-live">Live Session</button>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="course-card">
+                    <div class="course-card" data-course="starter-bootcamp">
                         <div class="course-header">
                             <div class="course-title">Starter Bootcamp</div>
                             <div class="course-badge">NEW</div>
@@ -712,13 +1173,13 @@
                         <div class="course-content">
                             <p>Kickstart your tech career with our intensive bootcamp covering essential skills.</p>
                             <div class="course-actions">
-                                <button class="btn btn-enroll">Enroll Now</button>
+                                <button class="btn btn-enroll" onclick="showTermsForCourse('starter_bootcamp')">Enroll Now</button>
                                 <button class="btn btn-live">Live Session</button>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="course-card">
+                    <div class="course-card" data-course="virtual-assistance">
                         <div class="course-header">
                             <div class="course-title">Virtual Assistance</div>
                             <div class="course-badge">POPULAR</div>
@@ -726,7 +1187,7 @@
                         <div class="course-content">
                             <p>Learn how to become a successful virtual assistant with our specialized training program.</p>
                             <div class="course-actions">
-                                <button class="btn btn-enroll">Enroll Now</button>
+                                <button class="btn btn-enroll" onclick="navigateToCourse('virtual_assistance')">Enroll Now</button>
                                 <button class="btn btn-live">Live Session</button>
                             </div>
                         </div>
@@ -787,7 +1248,7 @@
                 <h2 class="section-title">Available Courses</h2>
                 
                 <div class="course-list">
-                    <div class="course-item">
+                    <div class="course-item" data-course="starter-bootcamp">
                         <div class="course-item-header">
                             <div class="course-name">Starter Bootcamp</div>
                             <div class="course-price">FREE</div>
@@ -796,28 +1257,28 @@
                             <div class="course-detail"><i class="far fa-clock"></i> 1 Week</div>
                             <div class="course-detail"><i class="fas fa-mobile-alt"></i> Mobile</div>
                         </div>
-                        <div class="course-status">This course will launch shortly.</div>
+                        <div class="course-status">Complete beginner-friendly tech introduction</div>
                         <div class="course-action">
-                            <button class="btn-learn">Learn More</button>
+                            <button class="btn-learn" onclick="showTermsForCourse('starter_bootcamp')">Start Course</button>
                         </div>
                     </div>
                     
-                    <div class="course-item">
+                    <div class="course-item" data-course="remote-work">
                         <div class="course-item-header">
                             <div class="course-name">Remote Work Mastery</div>
-                            <div class="course-price">$49</div>
+                            <div class="course-price">FREE</div>
                         </div>
                         <div class="course-details">
                             <div class="course-detail"><i class="far fa-clock"></i> 2 Weeks</div>
                             <div class="course-detail"><i class="fas fa-mobile-alt"></i> Mobile</div>
                         </div>
-                        <div class="course-status">This course will launch shortly.</div>
+                        <div class="course-status">Master remote work skills and productivity</div>
                         <div class="course-action">
-                            <button class="btn-learn">Learn More</button>
+                            <button class="btn-learn" onclick="navigateToCourse('remote_work_mastery')">Start Course</button>
                         </div>
                     </div>
                     
-                    <div class="course-item">
+                    <div class="course-item" data-course="digital-sales">
                         <div class="course-item-header">
                             <div class="course-name">Digital Sales</div>
                             <div class="course-price">$69</div>
@@ -826,13 +1287,13 @@
                             <div class="course-detail"><i class="far fa-clock"></i> 2 Weeks</div>
                             <div class="course-detail"><i class="fas fa-mobile-alt"></i> Mobile</div>
                         </div>
-                        <div class="course-status">This course will launch shortly.</div>
+                        <div class="course-status">Master digital sales strategies and techniques</div>
                         <div class="course-action">
-                            <button class="btn-learn">Learn More</button>
+                            <button class="btn-learn" onclick="navigateToCourse('digital_sales')">Start Course</button>
                         </div>
                     </div>
                     
-                    <div class="course-item">
+                    <div class="course-item" data-course="tech-support">
                         <div class="course-item-header">
                             <div class="course-name">Tech Support (M365)</div>
                             <div class="course-price">$99</div>
@@ -841,13 +1302,13 @@
                             <div class="course-detail"><i class="far fa-clock"></i> 4 Weeks</div>
                             <div class="course-detail"><i class="fas fa-mobile-alt"></i> Mobile + PC</div>
                         </div>
-                        <div class="course-status">This course will launch shortly.</div>
+                        <div class="course-status">Become a certified Microsoft 365 support specialist</div>
                         <div class="course-action">
-                            <button class="btn-learn">Learn More</button>
+                            <button class="btn-learn" onclick="navigateToCourse('tech_support')">Start Course</button>
                         </div>
                     </div>
                     
-                    <div class="course-item">
+                    <div class="course-item" data-course="ai-prompting">
                         <div class="course-item-header">
                             <div class="course-name">Intro to AI & Prompting</div>
                             <div class="course-price">$39</div>
@@ -856,13 +1317,13 @@
                             <div class="course-detail"><i class="far fa-clock"></i> 1 Week</div>
                             <div class="course-detail"><i class="fas fa-mobile-alt"></i> Mobile</div>
                         </div>
-                        <div class="course-status">This course will launch shortly.</div>
+                        <div class="course-status">Learn AI fundamentals and effective prompting</div>
                         <div class="course-action">
-                            <button class="btn-learn">Learn More</button>
+                            <button class="btn-learn" onclick="navigateToCourse('ai_prompting')">Start Course</button>
                         </div>
                     </div>
                     
-                    <div class="course-item">
+                    <div class="course-item" data-course="virtual-assistance">
                         <div class="course-item-header">
                             <div class="course-name">Virtual Assistance</div>
                             <div class="course-price">$79</div>
@@ -871,9 +1332,9 @@
                             <div class="course-detail"><i class="far fa-clock"></i> 2 Weeks</div>
                             <div class="course-detail"><i class="fas fa-mobile-alt"></i> Mobile</div>
                         </div>
-                        <div class="course-status">This course will launch shortly.</div>
+                        <div class="course-status">Become a professional virtual assistant</div>
                         <div class="course-action">
-                            <button class="btn-learn">Learn More</button>
+                            <button class="btn-learn" onclick="navigateToCourse('virtual_assistance')">Start Course</button>
                         </div>
                     </div>
                 </div>
@@ -881,8 +1342,293 @@
                 <div class="why-choose" style="margin-top: 30px; text-align: center; padding: 20px; background: white; border-radius: 16px; box-shadow: var(--card-shadow);">
                     <h2 style="margin-bottom: 15px;">Why Choose Brightrose Tech?</h2>
                     <p style="margin-bottom: 20px; color: var(--gray);">We provide industry-leading courses with practical skills and expert guidance to help you succeed in the digital world.</p>
-                    <button class="btn btn-enroll" style="width: 100%;">Enroll Now</button>
+                    <button class="btn btn-enroll" onclick="navigateToCourse('all_courses')" style="width: 100%;">Enroll Now</button>
                 </div>
+            </div>
+
+            <!-- Terms & Conditions Page -->
+            <div class="terms-page">
+                <div class="terms-container">
+                    <div class="terms-title">Starter Bootcamp - Terms & Conditions</div>
+                    
+                    <div class="terms-content">
+                        <p>Welcome to Brightrose Tech's Starter Bootcamp! Before you begin your learning journey, please read and agree to the following terms and conditions:</p>
+                        
+                        <div class="terms-subtitle">1. Course Enrollment</div>
+                        <p>By enrolling in this course, you agree to:</p>
+                        <ul>
+                            <li>Complete all modules in sequential order</li>
+                            <li>Participate in course activities and assignments</li>
+                            <li>Complete the final exam to receive your certificate</li>
+                            <li>Use the course materials for personal learning only</li>
+                        </ul>
+                        
+                        <div class="terms-subtitle">2. Time Commitment</div>
+                        <p>The Starter Bootcamp is a 1-week intensive course requiring:</p>
+                        <ul>
+                            <li>Minimum 2-3 hours per day of study time</li>
+                            <li>Active participation in live sessions (if available)</li>
+                            <li>Completion of all assignments within deadlines</li>
+                        </ul>
+                        
+                        <div class="terms-subtitle">3. Certificate Requirements</div>
+                        <p>To receive your certificate of completion, you must:</p>
+                        <ul>
+                            <li>Complete all course modules (100% completion)</li>
+                            <li>Pass the final exam with a score of 70% or higher</li>
+                            <li>Submit all required assignments</li>
+                            <li>Participate in course discussions</li>
+                        </ul>
+                        
+                        <div class="terms-subtitle">4. Code of Conduct</div>
+                        <p>As a Brightrose Tech student, you agree to:</p>
+                        <ul>
+                            <li>Maintain academic integrity (no cheating or plagiarism)</li>
+                            <li>Respect instructors and fellow students</li>
+                            <li>Use appropriate language in discussions</li>
+                            <li>Report any technical issues promptly</li>
+                        </ul>
+                        
+                        <div class="terms-subtitle">5. Technical Requirements</div>
+                        <p>You are responsible for ensuring you have:</p>
+                        <ul>
+                            <li>Stable internet connection</li>
+                            <li>Updated web browser (Chrome, Firefox, or Safari)</li>
+                            <li>Required software installed (as specified in each module)</li>
+                            <li>Mobile device or computer for course access</li>
+                        </ul>
+                        
+                        <div class="terms-subtitle">6. Privacy & Data Usage</div>
+                        <p>Brightrose Tech respects your privacy. We will:</p>
+                        <ul>
+                            <li>Only use your data for course administration</li>
+                            <li>Never share your personal information with third parties</li>
+                            <li>Secure your data with industry-standard encryption</li>
+                            <li>Allow you to delete your account and data upon request</li>
+                        </ul>
+                        
+                        <div class="terms-subtitle">7. Refund Policy</div>
+                        <p>Since this course is FREE, no refunds apply. However, you may:</p>
+                        <ul>
+                            <li>Request to restart the course at any time</li>
+                            <li>Access course materials for 6 months after enrollment</li>
+                            <li>Contact support for technical assistance</li>
+                        </ul>
+                        
+                        <div class="terms-subtitle">8. Support & Assistance</div>
+                        <p>Our support team is available to help you:</p>
+                        <ul>
+                            <li>Email: support@brightrosetech.com</li>
+                            <li>Live chat: Available during business hours</li>
+                            <li>Community forum: 24/7 peer support</li>
+                        </ul>
+                        
+                        <p style="margin-top: 20px; font-weight: 600; color: var(--dark);">
+                            By proceeding, you acknowledge that you have read, understood, and agree to all the terms and conditions outlined above.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="terms-checkbox">
+                    <input type="checkbox" id="agree-terms">
+                    <label for="agree-terms">
+                        I have read and agree to the Terms & Conditions. I understand that I must complete all requirements to receive my certificate.
+                    </label>
+                </div>
+                
+                <div class="terms-buttons">
+                    <button class="btn btn-decline" id="decline-terms">Decline</button>
+                    <button class="btn btn-accept" id="accept-terms" disabled>Accept & Proceed</button>
+                </div>
+            </div>
+
+            <!-- Course Details Page -->
+            <div class="course-details-page">
+                <div class="course-hero">
+                    <h1 id="course-details-title">Digital Sales</h1>
+                    <p id="course-details-desc">Master the art of digital sales with our comprehensive course designed for modern professionals.</p>
+                    <div class="course-meta">
+                        <div class="meta-item"><i class="far fa-clock"></i> <span id="course-duration">2 Weeks</span></div>
+                        <div class="meta-item"><i class="fas fa-layer-group"></i> <span id="course-modules">5 Modules</span></div>
+                        <div class="meta-item"><i class="fas fa-trophy"></i> Certificate</div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="course-progress"></div>
+                    </div>
+                    <div class="progress-text">Progress: <span id="progress-percentage">0%</span></div>
+                </div>
+                
+                <div class="course-tabs">
+                    <div class="course-tab active" data-tab="modules">Modules</div>
+                    <div class="course-tab" data-tab="resources">Resources</div>
+                    <div class="course-tab" data-tab="discussions">Discussions</div>
+                </div>
+                
+                <div class="tab-content active" id="modules-tab">
+                    <div class="module-list" id="module-list">
+                        <!-- Modules will be dynamically populated -->
+                    </div>
+                    <button class="btn btn-primary" id="start-exam-btn" style="width: 100%;">Take Final Exam</button>
+                </div>
+                
+                <div class="tab-content" id="resources-tab">
+                    <div class="module-list">
+                        <div class="module-item">
+                            <div class="module-icon">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                            <div class="module-info">
+                                <div class="module-title">Course Syllabus</div>
+                                <div class="module-desc">Detailed outline of the course content</div>
+                            </div>
+                            <div class="module-status">
+                                <i class="fas fa-download"></i>
+                            </div>
+                        </div>
+                        <div class="module-item">
+                            <div class="module-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="module-info">
+                                <div class="module-title">Workbook</div>
+                                <div class="module-desc">Exercises and activities to practice</div>
+                            </div>
+                            <div class="module-status">
+                                <i class="fas fa-download"></i>
+                            </div>
+                        </div>
+                        <div class="module-item">
+                            <div class="module-icon">
+                                <i class="fas fa-video"></i>
+                            </div>
+                            <div class="module-info">
+                                <div class="module-title">Video Resources</div>
+                                <div class="module-desc">Additional video content</div>
+                            </div>
+                            <div class="module-status">
+                                <i class="fas fa-download"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="discussions-tab">
+                    <div class="post-form">
+                        <textarea class="post-input" placeholder="Ask a question or share your thoughts..."></textarea>
+                        <div class="post-actions">
+                            <button class="btn-post">Post</button>
+                        </div>
+                    </div>
+                    
+                    <div class="feed">
+                        <div class="post">
+                            <div class="post-header">
+                                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80" alt="User" class="post-avatar">
+                                <div>
+                                    <div class="post-user">Sarah Johnson</div>
+                                    <div class="post-time">2 hours ago</div>
+                                </div>
+                            </div>
+                            <div class="post-content">
+                                Can someone explain the difference between inbound and outbound sales strategies?
+                            </div>
+                            <div class="post-engagement">
+                                <div class="engagement-btn"><i class="far fa-heart"></i> 5</div>
+                                <div class="engagement-btn"><i class="far fa-comment"></i> 3</div>
+                            </div>
+                        </div>
+                        
+                        <div class="post">
+                            <div class="post-header">
+                                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80" alt="User" class="post-avatar">
+                                <div>
+                                    <div class="post-user">Michael Chen</div>
+                                    <div class="post-time">5 hours ago</div>
+                                </div>
+                            </div>
+                            <div class="post-content">
+                                I found the CRM integration section really helpful. Any recommendations for CRM tools for small businesses?
+                            </div>
+                            <div class="post-engagement">
+                                <div class="engagement-btn"><i class="far fa-heart"></i> 8</div>
+                                <div class="engagement-btn"><i class="far fa-comment"></i> 7</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exam Page -->
+            <div class="exam-page">
+                <div class="exam-header">
+                    <h2 id="exam-title">Digital Sales Final Exam</h2>
+                    <div class="exam-timer" id="exam-timer">30:00</div>
+                </div>
+                
+                <div class="question-container">
+                    <div class="question-number">Question <span id="current-question">1</span> of <span id="total-questions">10</span></div>
+                    <div class="question-text" id="question-text">What is the primary goal of digital sales?</div>
+                    
+                    <div class="options-list" id="options-list">
+                        <!-- Options will be dynamically populated -->
+                    </div>
+                    
+                    <div class="exam-navigation">
+                        <button class="btn btn-secondary" id="prev-question">Previous</button>
+                        <button class="btn btn-primary" id="next-question">Next</button>
+                    </div>
+                </div>
+                
+                <div class="question-progress">
+                    <div class="progress-container">
+                        <div class="progress-bar" id="exam-progress"></div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" id="submit-exam" style="width: 100%; margin-top: 20px; display: none;">Submit Exam</button>
+            </div>
+
+            <!-- Results Page -->
+            <div class="results-page">
+                <div class="results-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="results-score" id="results-score">85%</div>
+                <div class="results-message" id="results-message">Congratulations! You passed the exam.</div>
+                <div class="results-details">
+                    <p>Correct Answers: <span id="correct-answers">8</span>/<span id="total-answers">10</span></p>
+                    <p>Time Taken: <span id="time-taken">25:30</span></p>
+                </div>
+                <button class="btn btn-certificate" id="generate-certificate">Generate Certificate</button>
+            </div>
+
+            <!-- Certificate Page -->
+            <div class="certificate-page">
+                <div class="certificate-container" id="certificate-container">
+                    <div class="certificate-header">
+                        <div class="certificate-title">Certificate of Completion</div>
+                        <div class="certificate-subtitle">This certifies that</div>
+                    </div>
+                    <div class="certificate-body">
+                        <div class="certificate-name" id="certificate-name">Alex Morgan</div>
+                        <div class="certificate-course" id="certificate-course">Digital Sales</div>
+                        <div class="certificate-date" id="certificate-date">Completed on October 15, 2023</div>
+                        <p>has successfully completed all requirements and demonstrated proficiency in the course material.</p>
+                    </div>
+                    <div class="certificate-footer">
+                        <div class="signature">
+                            <div class="signature-line"></div>
+                            <div>Nmegwa Denis Bright</div>
+                            <div>Founder & Tutor</div>
+                        </div>
+                        <div class="signature">
+                            <div class="signature-line"></div>
+                            <div>Brightrose Tech</div>
+                            <div>Date</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-download" id="download-certificate">Download Certificate</button>
             </div>
 
             <!-- Community Page -->
@@ -890,69 +1636,35 @@
                 <h2 class="section-title">Community</h2>
                 
                 <div class="post-form">
-                    <textarea class="post-input" placeholder="Share something with the community..."></textarea>
+                    <textarea class="post-input" id="post-content" placeholder="Share something with the community..."></textarea>
                     <div class="post-actions">
                         <div class="media-options">
-                            <div class="media-option">
+                            <div class="media-option" id="image-upload">
                                 <i class="fas fa-image"></i>
                             </div>
-                            <div class="media-option">
+                            <div class="media-option" id="video-upload">
                                 <i class="fas fa-video"></i>
                             </div>
-                            <div class="media-option">
+                            <div class="media-option" id="file-upload">
                                 <i class="fas fa-file-alt"></i>
                             </div>
                         </div>
-                        <button class="btn-post">Post</button>
+                        <button class="btn-post" id="submit-post">Post</button>
                     </div>
+                    <div id="upload-preview" style="margin-top: 10px;"></div>
                 </div>
                 
-                <div class="feed">
-                    <div class="post">
-                        <div class="post-header">
-                            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80" alt="User" class="post-avatar">
-                            <div>
-                                <div class="post-user">Sarah Johnson</div>
-                                <div class="post-time">2 hours ago</div>
-                            </div>
-                        </div>
-                        <div class="post-content">
-                            Just completed the Digital Sales course! The content was incredibly valuable and practical. Highly recommend!
-                        </div>
-                        <div class="post-engagement">
-                            <div class="engagement-btn"><i class="far fa-heart"></i> 24</div>
-                            <div class="engagement-btn"><i class="far fa-comment"></i> 8</div>
-                            <div class="engagement-btn"><i class="far fa-share-square"></i> Share</div>
-                        </div>
-                    </div>
-                    
-                    <div class="post">
-                        <div class="post-header">
-                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80" alt="User" class="post-avatar">
-                            <div>
-                                <div class="post-user">Michael Chen</div>
-                                <div class="post-time">5 hours ago</div>
-                            </div>
-                        </div>
-                        <div class="post-content">
-                            Anyone else working on the Virtual Assistance course? I'd love to connect and discuss the assignments!
-                        </div>
-                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" class="post-image" alt="Post Image">
-                        <div class="post-engagement">
-                            <div class="engagement-btn"><i class="far fa-heart"></i> 15</div>
-                            <div class="engagement-btn"><i class="far fa-comment"></i> 12</div>
-                            <div class="engagement-btn"><i class="far fa-share-square"></i> Share</div>
-                        </div>
-                    </div>
+                <div class="feed" id="community-feed">
+                    <!-- Posts will be dynamically populated -->
                 </div>
             </div>
 
             <!-- Profile Page -->
             <div class="profile-page">
                 <div class="profile-header">
-                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80" alt="Profile" class="profile-picture">
-                    <div class="profile-name">Alex Morgan</div>
-                    <div class="profile-email">alex.morgan@example.com</div>
+                    <img id="profile-picture" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80" alt="Profile" class="profile-picture">
+                    <div class="profile-name" id="profile-fullname">Loading...</div>
+                    <div class="profile-email" id="profile-email">Loading...</div>
                 </div>
                 
                 <div class="settings-list">
@@ -1059,10 +1771,534 @@
     </div>
 
     <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDOTkG_q_qqrD9SeIFMaIpvXmnfNtNktY",
+            authDomain: "brightrose-e594b.firebaseapp.com",
+            projectId: "brightrose-e594b",
+            storageBucket: "brightrose-e594b.firebasestorage.app",
+            messagingSenderId: "495303509160",
+            appId: "1:495303509160:web:1e945ec888138ff0d2ae9d",
+            measurementId: "G-NFQP67NQ45"
+        };
+
+        // Cloudinary configuration
+        const cloudName = 'dhoa1mdew';
+        const unsignedUploadPreset = 'unigned';
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const storage = firebase.storage();
+
+        // Course data structure
+        const courses = {
+            "digital-sales": {
+                title: "Digital Sales",
+                description: "Master the art of digital sales with our comprehensive course designed for modern professionals.",
+                duration: "2 Weeks",
+                modules: 5,
+                progress: 60,
+                modulesList: [
+                    {
+                        title: "Introduction to Digital Sales",
+                        description: "Understanding the fundamentals of digital sales",
+                        duration: "2 hours",
+                        completed: true
+                    },
+                    {
+                        title: "Sales Funnel Optimization",
+                        description: "Creating and optimizing effective sales funnels",
+                        duration: "3 hours",
+                        completed: true
+                    },
+                    {
+                        title: "CRM Implementation",
+                        description: "Setting up and using CRM systems effectively",
+                        duration: "4 hours",
+                        completed: true
+                    },
+                    {
+                        title: "Social Media Selling",
+                        description: "Leveraging social media for sales success",
+                        duration: "3 hours",
+                        completed: false
+                    },
+                    {
+                        title: "Closing Techniques",
+                        description: "Advanced techniques for closing digital sales",
+                        duration: "2 hours",
+                        completed: false
+                    }
+                ],
+                exam: {
+                    title: "Digital Sales Final Exam",
+                    duration: 30, // minutes
+                    questions: [
+                        {
+                            question: "What is the primary goal of digital sales?",
+                            options: [
+                                "To increase website traffic",
+                                "To generate qualified leads and convert them into customers",
+                                "To improve social media engagement",
+                                "To reduce marketing costs"
+                            ],
+                            correctAnswer: 1
+                        },
+                        {
+                            question: "Which of the following is NOT a key component of a sales funnel?",
+                            options: [
+                                "Awareness",
+                                "Consideration",
+                                "Conversion",
+                                "Elimination"
+                            ],
+                            correctAnswer: 3
+                        },
+                        {
+                            question: "What does CRM stand for in sales?",
+                            options: [
+                                "Customer Relationship Management",
+                                "Customer Retention Model",
+                                "Client Response Mechanism",
+                                "Corporate Revenue Management"
+                            ],
+                            correctAnswer: 0
+                        },
+                        {
+                            question: "Which social media platform is most effective for B2B sales?",
+                            options: [
+                                "Instagram",
+                                "TikTok",
+                                "LinkedIn",
+                                "Snapchat"
+                            ],
+                            correctAnswer: 2
+                        },
+                        {
+                            question: "What is the purpose of a call-to-action (CTA) in digital sales?",
+                            options: [
+                                "To make the website look more professional",
+                                "To guide users toward the next step in the sales process",
+                                "To increase page loading speed",
+                                "To improve search engine rankings"
+                            ],
+                            correctAnswer: 1
+                        },
+                        {
+                            question: "Which metric is most important for measuring sales performance?",
+                            options: [
+                                "Website visitors",
+                                "Conversion rate",
+                                "Social media followers",
+                                "Email open rate"
+                            ],
+                            correctAnswer: 1
+                        },
+                        {
+                            question: "What is 'lead nurturing' in digital sales?",
+                            options: [
+                                "Developing relationships with potential customers at every stage of the sales funnel",
+                                "Creating more leads through advertising",
+                                "Training new sales team members",
+                                "Automating the sales process completely"
+                            ],
+                            correctAnswer: 0
+                        },
+                        {
+                            question: "Which tool is commonly used for email marketing in sales?",
+                            options: [
+                                "Salesforce",
+                                "Mailchimp",
+                                "Google Analytics",
+                                "Trello"
+                            ],
+                            correctAnswer: 1
+                        },
+                        {
+                            question: "What is the '80/20 rule' in sales?",
+                            options: [
+                                "80% of sales come from 20% of customers",
+                                "80% of time should be spent on administrative tasks",
+                                "80% of marketing budget should go to digital channels",
+                                "80% of leads will convert without follow-up"
+                            ],
+                            correctAnswer: 0
+                        },
+                        {
+                            question: "Which closing technique involves presenting two positive options?",
+                            options: [
+                                "The Assumptive Close",
+                                "The Alternative Close",
+                                "The Summary Close",
+                                "The Urgency Close"
+                            ],
+                            correctAnswer: 1
+                        }
+                    ]
+                }
+            },
+            "starter-bootcamp": {
+                title: "Starter Bootcamp",
+                description: "Kickstart your tech career with our intensive bootcamp covering essential skills.",
+                duration: "1 Week",
+                modules: 4,
+                progress: 25,
+                modulesList: [
+                    {
+                        title: "Introduction to Tech Careers",
+                        description: "Exploring different paths in the tech industry",
+                        duration: "2 hours",
+                        completed: true
+                    },
+                    {
+                        title: "Essential Digital Tools",
+                        description: "Mastering the tools every tech professional needs",
+                        duration: "3 hours",
+                        completed: false
+                    },
+                    {
+                        title: "Basic Coding Concepts",
+                        description: "Understanding the fundamentals of programming",
+                        duration: "4 hours",
+                        completed: false
+                    },
+                    {
+                        title: "Building Your Portfolio",
+                        description: "Creating a standout portfolio to showcase your skills",
+                        duration: "2 hours",
+                        completed: false
+                    }
+                ],
+                exam: {
+                    title: "Starter Bootcamp Final Exam",
+                    duration: 20,
+                    questions: [
+                        {
+                            question: "What is the most important skill for a tech professional?",
+                            options: [
+                                "Problem-solving",
+                                "Memorization",
+                                "Typing speed",
+                                "Social media presence"
+                            ],
+                            correctAnswer: 0
+                        },
+                        {
+                            question: "Which programming language is best for beginners?",
+                            options: [
+                                "Python",
+                                "C++",
+                                "Assembly",
+                                "HTML"
+                            ],
+                            correctAnswer: 0
+                        },
+                        {
+                            question: "What does HTML stand for?",
+                            options: [
+                                "HyperText Markup Language",
+                                "HighTech Modern Language",
+                                "HyperTransfer Markup Language",
+                                "HighText Modern Layout"
+                            ],
+                            correctAnswer: 0
+                        },
+                        {
+                            question: "Which of these is a version control system?",
+                            options: [
+                                "Git",
+                                "Java",
+                                "Photoshop",
+                                "Excel"
+                            ],
+                            correctAnswer: 0
+                        },
+                        {
+                            question: "What is the purpose of CSS?",
+                            options: [
+                                "To style web pages",
+                                "To create database queries",
+                                "To handle server logic",
+                                "To manage user authentication"
+                            ],
+                            correctAnswer: 0
+                        },
+                        {
+                            question: "Which of these is NOT a programming language?",
+                            options: [
+                                "JavaScript",
+                                "Python",
+                                "HTML",
+                                "Java"
+                            ],
+                            correctAnswer: 2
+                        },
+                        {
+                            question: "What is an API?",
+                            options: [
+                                "Application Programming Interface",
+                                "Advanced Programming Instruction",
+                                "Automated Program Integration",
+                                "Application Process Interface"
+                            ],
+                            correctAnswer: 0
+                        },
+                        {
+                            question: "Which tool is used for project management in tech teams?",
+                            options: [
+                                "Trello",
+                                "Photoshop",
+                                "Microsoft Word",
+                                "Google Search"
+                            ],
+                            correctAnswer: 0
+                        },
+                        {
+                            question: "What is the purpose of a database?",
+                            options: [
+                                "To store and organize data",
+                                "To design user interfaces",
+                                "To write code faster",
+                                "To test applications"
+                            ],
+                            correctAnswer: 0
+                        },
+                        {
+                            question: "Which of these is a frontend framework?",
+                            options: [
+                                "React",
+                                "Node.js",
+                                "Django",
+                                "Spring"
+                            ],
+                            correctAnswer: 0
+                        }
+                    ]
+                }
+            },
+            "virtual-assistance": {
+                title: "Virtual Assistance",
+                description: "Learn how to become a successful virtual assistant with our specialized training program.",
+                duration: "2 Weeks",
+                modules: 6,
+                progress: 40,
+                modulesList: [
+                    {
+                        title: "Introduction to Virtual Assistance",
+                        description: "Understanding the role and opportunities",
+                        duration: "2 hours",
+                        completed: true
+                    },
+                    {
+                        title: "Essential Tools and Software",
+                        description: "Mastering the tools for virtual work",
+                        duration: "3 hours",
+                        completed: true
+                    },
+                    {
+                        title: "Communication Skills",
+                        description: "Effective communication with clients",
+                        duration: "2 hours",
+                        completed: false
+                    },
+                    {
+                        title: "Time Management",
+                        description: "Managing multiple clients and tasks",
+                        duration: "2 hours",
+                        completed: false
+                    },
+                    {
+                        title: "Specialized Services",
+                        description: "Offering niche virtual assistance services",
+                        duration: "3 hours",
+                        completed: false
+                    },
+                    {
+                        title: "Building Your Business",
+                        description: "Finding clients and growing your VA business",
+                        duration: "2 hours",
+                        completed: false
+                    }
+                ],
+                exam: {
+                    title: "Virtual Assistance Final Exam",
+                    duration: 25,
+                    questions: [
+                        {
+                            question: "What is the primary advantage of being a virtual assistant?",
+                            options: [
+                                "Flexibility and location independence",
+                                "Guaranteed high income",
+                                "No need for specialized skills",
+                                "Limited working hours"
+                            ],
+                            correctAnswer: 0
+                        },
+                        {
+                            question: "Which tool is essential for project management as a VA?",
+                            options: [
+                                "Trello or Asana",
+                                "Photoshop",
+                                "QuickBooks",
+                                "Google Ads"
+                            ],
+                            correctAnswer: 0
+                        }
+                    ]
+                }
+            },
+            "remote-work": {
+                title: "Remote Work Mastery",
+                description: "Master the skills and strategies needed to excel in remote work environments.",
+                duration: "2 Weeks",
+                modules: 6,
+                progress: 0,
+                modulesList: [
+                    {
+                        title: "Remote Work Fundamentals",
+                        description: "Understanding the core principles of remote work",
+                        duration: "2 hours",
+                        completed: false
+                    },
+                    {
+                        title: "Setting Up Your Workspace",
+                        description: "Creating an effective home office environment",
+                        duration: "1.5 hours",
+                        completed: false
+                    },
+                    {
+                        title: "Communication & Collaboration",
+                        description: "Mastering remote communication tools and techniques",
+                        duration: "3 hours",
+                        completed: false
+                    },
+                    {
+                        title: "Productivity & Time Management",
+                        description: "Staying focused and productive while working remotely",
+                        duration: "2.5 hours",
+                        completed: false
+                    },
+                    {
+                        title: "Work-Life Balance",
+                        description: "Maintaining healthy boundaries and avoiding burnout",
+                        duration: "2 hours",
+                        completed: false
+                    },
+                    {
+                        title: "Remote Career Advancement",
+                        description: "Growing your career in a remote environment",
+                        duration: "1.5 hours",
+                        completed: false
+                    }
+                ],
+                exam: {
+                    title: "Remote Work Mastery Final Exam",
+                    duration: 30,
+                    questions: [
+                        {
+                            question: "What is the most important factor for successful remote work?",
+                            options: [
+                                "Having the fastest internet connection",
+                                "Maintaining clear communication with your team",
+                                "Working longer hours than everyone else",
+                                "Having an expensive home office setup"
+                            ],
+                            correctAnswer: 1
+                        },
+                        {
+                            question: "Which of these is NOT a recommended practice for virtual meetings?",
+                            options: [
+                                "Setting a clear agenda beforehand",
+                                "Turning on your camera when possible",
+                                "Multitasking during the meeting",
+                                "Muting your microphone when not speaking"
+                            ],
+                            correctAnswer: 2
+                        }
+                    ]
+                }
+            }
+        };
+
+        // Global variables
+        let currentCourse = null;
+        let currentExam = null;
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let examTimer = null;
+        let timeRemaining = 0;
+        let examStartTime = null;
+        let currentUser = null;
+        let userData = null;
+        let uploadedMedia = null;
+        let selectedCourseForTerms = null;
+
+        // DOM elements
+        const homePage = document.querySelector('.home-page');
+        const coursesPage = document.querySelector('.courses-page');
+        const termsPage = document.querySelector('.terms-page');
+        const courseDetailsPage = document.querySelector('.course-details-page');
+        const examPage = document.querySelector('.exam-page');
+        const resultsPage = document.querySelector('.results-page');
+        const certificatePage = document.querySelector('.certificate-page');
+        const communityPage = document.querySelector('.community-page');
+        const profilePage = document.querySelector('.profile-page');
+
+        // Course navigation mapping
+        const coursePages = {
+            'starter_bootcamp': 'starter_bootcamp1.html',
+            'remote_work_mastery': 'remote_work_mastery.html',
+            'digital_sales': 'digital_sales.html',
+            'tech_support': 'tech_support.html',
+            'ai_prompting': 'ai_prompting.html',
+            'virtual_assistance': 'virtual_assistance.html',
+            'all_courses': 'courses.html'
+        };
+
+        // Function to show terms and conditions for starter bootcamp
+        function showTermsForCourse(courseName) {
+            selectedCourseForTerms = courseName;
+            
+            // Hide all pages
+            document.querySelectorAll('.home-page, .courses-page, .course-details-page, .exam-page, .results-page, .certificate-page, .community-page, .profile-page, .terms-page').forEach(page => {
+                page.style.display = 'none';
+            });
+            
+            // Show terms page
+            termsPage.style.display = 'block';
+            
+            // Reset checkbox
+            document.getElementById('agree-terms').checked = false;
+            document.getElementById('accept-terms').disabled = true;
+            
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        }
+
+        // Function to navigate to course pages
+        function navigateToCourse(courseName) {
+            const page = coursePages[courseName];
+            if (page) {
+                window.location.href = page;
+            } else {
+                // Fallback to showing course details if page doesn't exist
+                if (courses[courseName.replace('_', '-')]) {
+                    showCourseDetails(courseName.replace('_', '-'));
+                } else {
+                    alert('Course page is coming soon!');
+                }
+            }
+        }
+
         // Navigation functionality
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Firebase Auth
+            initAuth();
+            
             const navItems = document.querySelectorAll('.nav-item');
-            const pages = document.querySelectorAll('.home-page, .courses-page, .community-page, .profile-page');
+            const pages = document.querySelectorAll('.home-page, .courses-page, .course-details-page, .exam-page, .results-page, .certificate-page, .community-page, .profile-page, .terms-page');
             
             navItems.forEach(item => {
                 item.addEventListener('click', function() {
@@ -1078,10 +2314,687 @@
                     });
                     
                     document.querySelector(`.${targetPage}-page`).style.display = 'block';
+                    
+                    // Load community posts if navigating to community page
+                    if (targetPage === 'community') {
+                        loadCommunityPosts();
+                    }
                 });
             });
             
-            // Image carousel functionality
+            // Course card click handlers
+            document.querySelectorAll('.course-card, .course-item').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Don't trigger if button was clicked
+                    if (e.target.tagName === 'BUTTON') return;
+                    
+                    const courseId = this.getAttribute('data-course');
+                    if (courseId && courses[courseId]) {
+                        showCourseDetails(courseId);
+                    }
+                });
+            });
+            
+            // Terms and Conditions functionality
+            const agreeCheckbox = document.getElementById('agree-terms');
+            const acceptButton = document.getElementById('accept-terms');
+            const declineButton = document.getElementById('decline-terms');
+            
+            agreeCheckbox.addEventListener('change', function() {
+                acceptButton.disabled = !this.checked;
+            });
+            
+            acceptButton.addEventListener('click', function() {
+                if (selectedCourseForTerms === 'starter_bootcamp') {
+                    // Save user acceptance to Firebase
+                    saveTermsAcceptance();
+                    
+                    // Navigate to starter bootcamp page
+                    window.location.href = 'starter_bootcamp1.html';
+                }
+            });
+            
+            declineButton.addEventListener('click', function() {
+                // Go back to courses page
+                document.querySelectorAll('.home-page, .courses-page, .course-details-page, .exam-page, .results-page, .certificate-page, .community-page, .profile-page, .terms-page').forEach(page => {
+                    page.style.display = 'none';
+                });
+                coursesPage.style.display = 'block';
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                document.querySelector('.nav-item[data-page="courses"]').classList.add('active');
+            });
+            
+            // Course details tab functionality
+            document.querySelectorAll('.course-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Update active tab
+                    document.querySelectorAll('.course-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show corresponding content
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // Start exam button
+            document.getElementById('start-exam-btn').addEventListener('click', function() {
+                startExam(currentCourse);
+            });
+            
+            // Exam navigation
+            document.getElementById('next-question').addEventListener('click', nextQuestion);
+            document.getElementById('prev-question').addEventListener('click', prevQuestion);
+            document.getElementById('submit-exam').addEventListener('click', submitExam);
+            
+            // Certificate generation
+            document.getElementById('generate-certificate').addEventListener('click', generateCertificate);
+            document.getElementById('download-certificate').addEventListener('click', downloadCertificate);
+            
+            // Community functionality
+            document.getElementById('submit-post').addEventListener('click', submitPost);
+            document.getElementById('image-upload').addEventListener('click', () => openCloudinaryWidget('image'));
+            document.getElementById('video-upload').addEventListener('click', () => openCloudinaryWidget('video'));
+            document.getElementById('file-upload').addEventListener('click', () => openCloudinaryWidget('raw'));
+            
+            // Initialize carousel
+            initCarousel();
+            
+            // Button animations
+            const buttons = document.querySelectorAll('.btn, .btn-learn, .btn-post');
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 200);
+                });
+            });
+        });
+
+        // Save terms acceptance to Firebase
+        function saveTermsAcceptance() {
+            const user = auth.currentUser;
+            if (user) {
+                db.collection('termsAcceptance').add({
+                    userId: user.uid,
+                    courseId: 'starter_bootcamp',
+                    accepted: true,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    console.log('Terms acceptance saved to Firebase');
+                }).catch((error) => {
+                    console.error('Error saving terms acceptance: ', error);
+                });
+            } else {
+                // Store locally if user is not logged in
+                const acceptances = JSON.parse(localStorage.getItem('termsAcceptance') || '[]');
+                acceptances.push({
+                    courseId: 'starter_bootcamp',
+                    accepted: true,
+                    timestamp: new Date().toISOString()
+                });
+                localStorage.setItem('termsAcceptance', JSON.stringify(acceptances));
+            }
+        }
+
+        // Initialize Firebase Authentication
+        function initAuth() {
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    currentUser = user;
+                    loadUserData(user.uid);
+                } else {
+                    // If no user is logged in, use demo data
+                    currentUser = null;
+                    userData = {
+                        firstName: "Anointing",
+                        lastName: "Ese",
+                        email: "eseanointing7@gmail.com",
+                        profileImage: "https://res.cloudinary.com/dhoa1mdew/image/upload/v1694465430/profile.jpg"
+                    };
+                    updateUserUI();
+                }
+            });
+        }
+
+        // Load user data from Firestore
+        function loadUserData(userId) {
+            db.collection('users').doc(userId).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        userData = doc.data();
+                        updateUserUI();
+                    } else {
+                        console.log("No user data found");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error loading user data:", error);
+                });
+        }
+
+        // Update UI with user data
+        function updateUserUI() {
+            if (userData) {
+                // Update header
+                document.getElementById('header-user-name').textContent = `${userData.firstName} ${userData.lastName}`;
+                if (userData.profileImage) {
+                    document.getElementById('header-profile-img').src = userData.profileImage;
+                }
+                
+                // Update profile page
+                document.getElementById('profile-fullname').textContent = `${userData.firstName} ${userData.lastName}`;
+                document.getElementById('profile-email').textContent = userData.email;
+                if (userData.profileImage) {
+                    document.getElementById('profile-picture').src = userData.profileImage;
+                }
+                
+                // Update certificate name
+                document.getElementById('certificate-name').textContent = `${userData.firstName} ${userData.lastName}`;
+            }
+        }
+
+        // Show course details
+        function showCourseDetails(courseId) {
+            currentCourse = courseId;
+            const course = courses[courseId];
+            
+            // Update course details
+            document.getElementById('course-details-title').textContent = course.title;
+            document.getElementById('course-details-desc').textContent = course.description;
+            document.getElementById('course-duration').textContent = course.duration;
+            document.getElementById('course-modules').textContent = `${course.modules} Modules`;
+            
+            // Update progress
+            const progressBar = document.getElementById('course-progress');
+            const progressPercentage = document.getElementById('progress-percentage');
+            progressBar.style.width = `${course.progress}%`;
+            progressPercentage.textContent = `${course.progress}%`;
+            
+            // Populate modules
+            const moduleList = document.getElementById('module-list');
+            moduleList.innerHTML = '';
+            
+            course.modulesList.forEach((module, index) => {
+                const moduleItem = document.createElement('div');
+                moduleItem.className = 'module-item';
+                moduleItem.innerHTML = `
+                    <div class="module-icon">
+                        <i class="fas ${module.completed ? 'fa-check' : 'fa-play'}"></i>
+                    </div>
+                    <div class="module-info">
+                        <div class="module-title">${module.title}</div>
+                        <div class="module-desc">${module.description} • ${module.duration}</div>
+                    </div>
+                    <div class="module-status">
+                        ${module.completed ? '<i class="fas fa-check-circle" style="color: var(--success);"></i>' : '<i class="far fa-circle" style="color: var(--gray);"></i>'}
+                    </div>
+                `;
+                moduleList.appendChild(moduleItem);
+            });
+            
+            // Show course details page
+            document.querySelectorAll('.home-page, .courses-page, .course-details-page, .exam-page, .results-page, .certificate-page, .community-page, .profile-page, .terms-page').forEach(page => {
+                page.style.display = 'none';
+            });
+            courseDetailsPage.style.display = 'block';
+            
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        }
+
+        // Start exam
+        function startExam(courseId) {
+            currentExam = courses[courseId].exam;
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            timeRemaining = currentExam.duration * 60; // Convert to seconds
+            examStartTime = new Date();
+            
+            // Show exam page
+            document.querySelectorAll('.home-page, .courses-page, .course-details-page, .exam-page, .results-page, .certificate-page, .community-page, .profile-page, .terms-page').forEach(page => {
+                page.style.display = 'none';
+            });
+            examPage.style.display = 'block';
+            
+            // Update exam title
+            document.getElementById('exam-title').textContent = currentExam.title;
+            
+            // Start timer
+            startTimer();
+            
+            // Display first question
+            displayQuestion();
+        }
+
+        // Display current question
+        function displayQuestion() {
+            const question = currentExam.questions[currentQuestionIndex];
+            
+            // Update question number
+            document.getElementById('current-question').textContent = currentQuestionIndex + 1;
+            document.getElementById('total-questions').textContent = currentExam.questions.length;
+            
+            // Update question text
+            document.getElementById('question-text').textContent = question.question;
+            
+            // Update options
+            const optionsList = document.getElementById('options-list');
+            optionsList.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionItem = document.createElement('div');
+                optionItem.className = 'option-item';
+                if (userAnswers[currentQuestionIndex] === index) {
+                    optionItem.classList.add('selected');
+                }
+                optionItem.textContent = option;
+                optionItem.addEventListener('click', () => selectOption(index));
+                optionsList.appendChild(optionItem);
+            });
+            
+            // Update navigation buttons
+            document.getElementById('prev-question').style.display = currentQuestionIndex === 0 ? 'none' : 'flex';
+            document.getElementById('next-question').style.display = currentQuestionIndex === currentExam.questions.length - 1 ? 'none' : 'flex';
+            document.getElementById('submit-exam').style.display = currentQuestionIndex === currentExam.questions.length - 1 ? 'block' : 'none';
+            
+            // Update progress
+            const progress = ((currentQuestionIndex + 1) / currentExam.questions.length) * 100;
+            document.getElementById('exam-progress').style.width = `${progress}%`;
+        }
+
+        // Select an option
+        function selectOption(optionIndex) {
+            userAnswers[currentQuestionIndex] = optionIndex;
+            
+            // Update UI
+            document.querySelectorAll('.option-item').forEach((item, index) => {
+                if (index === optionIndex) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        }
+
+        // Next question
+        function nextQuestion() {
+            if (currentQuestionIndex < currentExam.questions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        }
+
+        // Previous question
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        // Start exam timer
+        function startTimer() {
+            updateTimerDisplay();
+            
+            examTimer = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(examTimer);
+                    submitExam();
+                }
+            }, 1000);
+        }
+
+        // Update timer display
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            document.getElementById('exam-timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Change color when time is running out
+            if (timeRemaining < 300) { // 5 minutes
+                document.getElementById('exam-timer').style.background = 'var(--secondary)';
+            }
+        }
+
+        // Submit exam
+        function submitExam() {
+            clearInterval(examTimer);
+            
+            // Calculate score
+            let correctAnswers = 0;
+            currentExam.questions.forEach((question, index) => {
+                if (userAnswers[index] === question.correctAnswer) {
+                    correctAnswers++;
+                }
+            });
+            
+            const score = Math.round((correctAnswers / currentExam.questions.length) * 100);
+            const timeTaken = Math.round((new Date() - examStartTime) / 1000);
+            const minutes = Math.floor(timeTaken / 60);
+            const seconds = timeTaken % 60;
+            const timeTakenFormatted = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Save results to Firebase
+            saveExamResults(currentCourse, score, correctAnswers, currentExam.questions.length, timeTakenFormatted);
+            
+            // Show results
+            showResults(score, correctAnswers, currentExam.questions.length, timeTakenFormatted);
+        }
+
+        // Save exam results to Firebase
+        function saveExamResults(courseId, score, correctAnswers, totalQuestions, timeTaken) {
+            const user = auth.currentUser;
+            if (user) {
+                db.collection('examResults').add({
+                    userId: user.uid,
+                    courseId: courseId,
+                    score: score,
+                    correctAnswers: correctAnswers,
+                    totalQuestions: totalQuestions,
+                    timeTaken: timeTaken,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    console.log('Exam results saved to Firebase');
+                }).catch((error) => {
+                    console.error('Error saving exam results: ', error);
+                });
+            } else {
+                // If user is not logged in, store locally
+                const results = JSON.parse(localStorage.getItem('examResults') || '[]');
+                results.push({
+                    courseId: courseId,
+                    score: score,
+                    correctAnswers: correctAnswers,
+                    totalQuestions: totalQuestions,
+                    timeTaken: timeTaken,
+                    timestamp: new Date().toISOString()
+                });
+                localStorage.setItem('examResults', JSON.stringify(results));
+            }
+        }
+
+        // Show exam results
+        function showResults(score, correctAnswers, totalQuestions, timeTaken) {
+            // Update results page
+            document.getElementById('results-score').textContent = `${score}%`;
+            document.getElementById('correct-answers').textContent = correctAnswers;
+            document.getElementById('total-answers').textContent = totalQuestions;
+            document.getElementById('time-taken').textContent = timeTaken;
+            
+            // Update message based on score
+            let message = '';
+            if (score >= 80) {
+                message = 'Excellent! You have a strong understanding of the material.';
+            } else if (score >= 70) {
+                message = 'Good job! You passed the exam.';
+            } else if (score >= 60) {
+                message = 'You passed, but consider reviewing the material.';
+            } else {
+                message = 'You did not pass. Please review the course material and try again.';
+            }
+            document.getElementById('results-message').textContent = message;
+            
+            // Show results page
+            document.querySelectorAll('.home-page, .courses-page, .course-details-page, .exam-page, .results-page, .certificate-page, .community-page, .profile-page, .terms-page').forEach(page => {
+                page.style.display = 'none';
+            });
+            resultsPage.style.display = 'block';
+        }
+
+        // Generate certificate
+        function generateCertificate() {
+            const course = courses[currentCourse];
+            const userName = userData ? `${userData.firstName} ${userData.lastName}` : 'Student';
+            const currentDate = new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            // Update certificate details
+            document.getElementById('certificate-name').textContent = userName;
+            document.getElementById('certificate-course').textContent = course.title;
+            document.getElementById('certificate-date').textContent = `Completed on ${currentDate}`;
+            
+            // Save certificate to Firebase
+            if (currentUser) {
+                db.collection('certificates').add({
+                    userId: currentUser.uid,
+                    courseId: currentCourse,
+                    courseName: course.title,
+                    userName: userName,
+                    issueDate: currentDate,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    console.log('Certificate saved to Firebase');
+                }).catch((error) => {
+                    console.error('Error saving certificate: ', error);
+                });
+            }
+            
+            // Show certificate page
+            document.querySelectorAll('.home-page, .courses-page, .course-details-page, .exam-page, .results-page, .certificate-page, .community-page, .profile-page, .terms-page').forEach(page => {
+                page.style.display = 'none';
+            });
+            certificatePage.style.display = 'block';
+        }
+
+        // Download certificate
+        function downloadCertificate() {
+            // In a real implementation, this would generate a PDF
+            // For this demo, we'll just show an alert
+            alert('Certificate download functionality would be implemented here. In a real application, this would generate a PDF file.');
+        }
+
+        // Community functionality
+
+        // Open Cloudinary upload widget
+        function openCloudinaryWidget(resourceType) {
+            const widget = cloudinary.createUploadWidget({
+                cloudName: cloudName,
+                uploadPreset: unsignedUploadPreset,
+                sources: ['local', 'url', 'camera'],
+                resourceType: resourceType,
+                multiple: false,
+                maxFileSize: 15000000, // 15MB
+                clientAllowedFormats: resourceType === 'image' ? ['jpg', 'jpeg', 'png', 'gif', 'webp'] : 
+                                    resourceType === 'video' ? ['mp4', 'mov', 'avi', 'wmv'] : 
+                                    ['pdf', 'doc', 'docx', 'txt', 'zip']
+            }, (error, result) => {
+                if (!error && result && result.event === "success") {
+                    uploadedMedia = {
+                        url: result.info.secure_url,
+                        type: resourceType,
+                        publicId: result.info.public_id
+                    };
+                    
+                    // Show preview
+                    const preview = document.getElementById('upload-preview');
+                    if (resourceType === 'image') {
+                        preview.innerHTML = `<img src="${uploadedMedia.url}" style="max-width: 100px; max-height: 100px; border-radius: 8px; margin-right: 10px;">`;
+                    } else if (resourceType === 'video') {
+                        preview.innerHTML = `<video controls style="max-width: 100px; max-height: 100px; border-radius: 8px; margin-right: 10px;">
+                            <source src="${uploadedMedia.url}" type="video/mp4">
+                        </video>`;
+                    } else {
+                        preview.innerHTML = `<div style="display: flex; align-items: center; padding: 10px; background: var(--light); border-radius: 8px;">
+                            <i class="fas fa-file" style="margin-right: 10px; color: var(--primary);"></i>
+                            <span>File uploaded</span>
+                        </div>`;
+                    }
+                }
+            });
+            
+            widget.open();
+        }
+
+        // Submit post to community
+        function submitPost() {
+            const content = document.getElementById('post-content').value.trim();
+            
+            if (!content && !uploadedMedia) {
+                alert('Please add some content or media to your post');
+                return;
+            }
+            
+            const postData = {
+                content: content,
+                userId: currentUser ? currentUser.uid : 'demo-user',
+                userName: userData ? `${userData.firstName} ${userData.lastName}` : 'Demo User',
+                userAvatar: userData ? userData.profileImage : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                likes: 0,
+                comments: []
+            };
+            
+            // Add media if uploaded
+            if (uploadedMedia) {
+                postData.media = uploadedMedia;
+            }
+            
+            // Save to Firestore
+            db.collection('posts').add(postData)
+                .then((docRef) => {
+                    console.log('Post saved to Firebase with ID: ', docRef.id);
+                    document.getElementById('post-content').value = '';
+                    document.getElementById('upload-preview').innerHTML = '';
+                    uploadedMedia = null;
+                    loadCommunityPosts();
+                    
+                    // Show success message
+                    alert('Post published successfully!');
+                })
+                .catch((error) => {
+                    console.error('Error saving post: ', error);
+                    alert('Error posting. Please try again. Error: ' + error.message);
+                });
+        }
+
+        // Load community posts
+        function loadCommunityPosts() {
+            const feed = document.getElementById('community-feed');
+            feed.innerHTML = '<p style="text-align: center; color: var(--gray);">Loading posts...</p>';
+            
+            // First, try to load from Firebase
+            db.collection('posts')
+                .orderBy('timestamp', 'desc')
+                .limit(10)
+                .get()
+                .then((querySnapshot) => {
+                    feed.innerHTML = '';
+                    
+                    if (querySnapshot.empty) {
+                        // If no posts in Firebase, show sample posts
+                        showSamplePosts();
+                        return;
+                    }
+                    
+                    querySnapshot.forEach((doc) => {
+                        const post = doc.data();
+                        const postElement = createPostElement(post);
+                        feed.appendChild(postElement);
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error loading posts from Firebase: ', error);
+                    // If Firebase fails, show sample posts
+                    showSamplePosts();
+                });
+        }
+
+        // Show sample posts when Firebase is not available
+        function showSamplePosts() {
+            const feed = document.getElementById('community-feed');
+            feed.innerHTML = '';
+            
+            const samplePosts = [
+                {
+                    userName: "Sarah Johnson",
+                    userAvatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
+                    content: "Just completed the Digital Sales course! The section on CRM implementation was incredibly helpful.",
+                    timestamp: "2 hours ago",
+                    likes: 5,
+                    comments: 3
+                },
+                {
+                    userName: "Michael Chen",
+                    userAvatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
+                    content: "Does anyone have recommendations for good project management tools for remote teams?",
+                    timestamp: "5 hours ago",
+                    likes: 8,
+                    comments: 7
+                },
+                {
+                    userName: "Emma Wilson",
+                    userAvatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
+                    content: "The Virtual Assistance course helped me land my first client! So grateful for this platform.",
+                    timestamp: "1 day ago",
+                    likes: 12,
+                    comments: 4
+                }
+            ];
+            
+            samplePosts.forEach(post => {
+                const postElement = createPostElement(post);
+                feed.appendChild(postElement);
+            });
+        }
+
+        // Create post element
+        function createPostElement(post) {
+            const postElement = document.createElement('div');
+            postElement.className = 'post';
+            
+            let mediaHtml = '';
+            if (post.media) {
+                if (post.media.type === 'image') {
+                    mediaHtml = `<img src="${post.media.url}" class="post-image" alt="Post image">`;
+                } else if (post.media.type === 'video') {
+                    mediaHtml = `<video controls class="post-video">
+                        <source src="${post.media.url}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>`;
+                } else {
+                    mediaHtml = `<div class="post-file">
+                        <i class="fas fa-file"></i>
+                        <a href="${post.media.url}" target="_blank">Download file</a>
+                    </div>`;
+                }
+            }
+            
+            postElement.innerHTML = `
+                <div class="post-header">
+                    <img src="${post.userAvatar}" alt="User" class="post-avatar">
+                    <div>
+                        <div class="post-user">${post.userName}</div>
+                        <div class="post-time">${post.timestamp}</div>
+                    </div>
+                </div>
+                <div class="post-content">
+                    ${post.content}
+                </div>
+                ${mediaHtml}
+                <div class="post-engagement">
+                    <div class="engagement-btn"><i class="far fa-heart"></i> ${post.likes || 0}</div>
+                    <div class="engagement-btn"><i class="far fa-comment"></i> ${post.comments ? post.comments.length : 0}</div>
+                    <div class="engagement-btn"><i class="far fa-share-square"></i> Share</div>
+                </div>
+            `;
+            
+            return postElement;
+        }
+
+        // Initialize carousel
+        function initCarousel() {
             const carouselTrack = document.querySelector('.carousel-track');
             const carouselDots = document.querySelectorAll('.carousel-dot');
             let currentSlide = 0;
@@ -1107,18 +3020,7 @@
                     updateCarousel();
                 });
             });
-            
-            // Button animations
-            const buttons = document.querySelectorAll('.btn, .btn-learn, .btn-post');
-            buttons.forEach(button => {
-                button.addEventListener('click', function() {
-                    this.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        this.style.transform = '';
-                    }, 200);
-                });
-            });
-        });
+        }
     </script>
 </body>
 </html>
